@@ -7,7 +7,7 @@ export default function AddKoleksi() {
 
   const [userId, setUserId] = useState("");
   const [bukuId, setBukuId] = useState("");
-  
+
   const handleSubmit = async () => {
     const apiUrl = `http://localhost:4000/koleksi/create`;
 
@@ -19,20 +19,20 @@ export default function AddKoleksi() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-            userId,
-            bukuId
-          }),
+          userId,
+          bukuId,
+        }),
       });
 
       if (response.status === 200) {
         alert("Data berhasil ditambah");
       } else if (response.status === 400) {
-        alert("Gagal menambahkan data");
+        alert("Gagal mengubah data");
       } else {
-        console.error("Failed to submit data");
+        console.error("Gagal");
       }
     } catch (error) {
-      console.error("Error during data submission", error);
+      console.error("Error: ", error);
     }
   };
 
@@ -50,7 +50,7 @@ export default function AddKoleksi() {
       if (response.status === 200) {
         const data = await response.json();
         setUserId(data._id);
-        console.log(userId)
+        console.log(userId);
       } else if (response.status === 404) {
         setUserId([]);
       }

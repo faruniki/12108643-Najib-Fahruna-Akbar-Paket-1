@@ -24,13 +24,13 @@ export default function AddKategori() {
 
       if (response.status === 200) {
         alert("Data berhasil ditambah");
-      } else if (response.status === 400) {
-        alert("Gagal menambahkan data");
+    } else if (response.status === 400) {
+        alert("Gagal mengubah data");
       } else {
-        console.error("Failed to submit data");
+        console.error("Gagal");
       }
     } catch (error) {
-      console.error("Error during data submission", error);
+      console.error("Error: ", error);
     }
   };
 

@@ -37,6 +37,9 @@ export default function Navbar() {
         <li>
           <a href="/review">Review</a>
         </li>
+        <li>
+          <a href="/users">Users</a>
+        </li>
         <li style={{marginLeft: 10, marginRight: 10}}>
           <a onClick={LogOut}>
             <LogoutIcon />

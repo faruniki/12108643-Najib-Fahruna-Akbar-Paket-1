@@ -6,14 +6,14 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import Box from "@mui/material/Box";
 import { Button } from "@mui/material";
 
-export default function Buku() {
+export default function Users() {
   const token = Cookies.get("access_token") || "";
-  const [dataBuku, setDataBuku] = useState("");
+  const [dataUsers, setDataUsers] = useState("");
   async function fetchData() {
-    const apiUrl = `http://localhost:4000/buku`;
+    const apiUrl = `http://localhost:4000/auth/`;
 
     try {
-      setDataBuku([]);
+      setDataUsers([]);
       const response = await fetch(apiUrl, {
         method: "GET",
         headers: {
@@ -23,37 +23,37 @@ export default function Buku() {
 
       if (response.status === 200) {
         const data = await response.json();
-        setDataBuku(data);
+        setDataUsers(data);
       } else if (response.status === 404) {
-        setDataBuku([]);
+        setDataUsers([]);
       }
     } catch (error) {
-      setDataBuku(false);
+      setDataUsers(false);
     }
   }
 
   const columns = [
     {
-      field: "judul",
-      headerName: "Judul Buku",
+      field: "username",
+      headerName: "Username",
       width: 400,
       editable: true,
     },
     {
-      field: "penulis",
-      headerName: "Penulis",
+      field: "email",
+      headerName: "Email",
       width: 300,
       editable: true,
     },
     {
-      field: "penerbit",
-      headerName: "Penerbit",
+      field: "role",
+      headerName: "Role",
       width: 250,
       editable: true,
     },
     {
-      field: "tahun_terbit",
-      headerName: "Tahun Terbit",
+      field: "address",
+      headerName: "Alamat",
       width: 150,
       editable: true,
     },
@@ -131,8 +131,8 @@ export default function Buku() {
       <center>
         <Box style={{ width: "90%", marginTop: 40 }}>
           <DataGrid
-            getRowId={(dataBuku) => dataBuku._id}
-            rows={dataBuku}
+            getRowId={(dataUsers) => dataUsers._id}
+            rows={dataUsers}
             columns={columns}
             initialState={{
               pagination: {

@@ -9,7 +9,7 @@ export default function AddReview() {
   const [bukuId, setBukuId] = useState("");
   const [review, setReview] = useState("");
   const [rating, setRating] = useState("");
-  
+
   const handleSubmit = async () => {
     const apiUrl = `http://localhost:4000/review/create`;
 
@@ -21,22 +21,22 @@ export default function AddReview() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-            userId,
-            bukuId,
-            review,
-            rating,
-          }),
+          userId,
+          bukuId,
+          review,
+          rating,
+        }),
       });
 
       if (response.status === 200) {
         alert("Data berhasil ditambah");
       } else if (response.status === 400) {
-        alert("Gagal menambahkan data");
+        alert("Gagal mengubah data");
       } else {
-        console.error("Failed to submit data");
+        console.error("Gagal");
       }
     } catch (error) {
-      console.error("Error during data submission", error);
+      console.error("Error: ", error);
     }
   };
 
@@ -54,7 +54,7 @@ export default function AddReview() {
       if (response.status === 200) {
         const data = await response.json();
         setUserId(data._id);
-        console.log(userId)
+        console.log(userId);
       } else if (response.status === 404) {
         setUserId([]);
       }

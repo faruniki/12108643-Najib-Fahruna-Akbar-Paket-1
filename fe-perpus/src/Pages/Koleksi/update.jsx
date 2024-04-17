@@ -2,18 +2,18 @@ import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import Navbar from "../../Components/Navbar";
 
-export default function AddPeminjaman() {
+export default function UpdateKoleksi() {
   const token = Cookies.get("access_token") || "";
 
   const [userId, setUserId] = useState("");
   const [bukuId, setBukuId] = useState("");
 
   const handleSubmit = async () => {
-    const apiUrl = `http://localhost:4000/peminjaman/create`;
+    const apiUrl = `http://localhost:4000/koleksi/661f602633ba0eaabe8723fd`;
 
     try {
       const response = await fetch(apiUrl, {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -25,7 +25,7 @@ export default function AddPeminjaman() {
       });
 
       if (response.status === 200) {
-        alert("Data berhasil ditambah");
+        alert("Data berhasil diubah");
       } else if (response.status === 400) {
         alert("Gagal mengubah data");
       } else {
