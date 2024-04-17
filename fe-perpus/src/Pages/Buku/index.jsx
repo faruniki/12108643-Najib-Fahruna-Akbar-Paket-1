@@ -121,6 +121,7 @@ export default function Buku() {
         >
           Tambah
         </button>
+        
       </center>
     </div>
   );

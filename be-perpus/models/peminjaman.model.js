@@ -2,11 +2,13 @@ const mongoose = require("mongoose");
 
 const peminjamanSchema = new mongoose.Schema({
   userId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
   bukuId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Buku",
     required: true,
   },
   status: {

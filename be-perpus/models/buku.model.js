@@ -18,7 +18,8 @@ const bukuSchema = new mongoose.Schema({
     required: true,
   },
   kategori: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Kategori",
     required: false,
   },
 });

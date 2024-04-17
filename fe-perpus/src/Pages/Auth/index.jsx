@@ -15,9 +15,9 @@ export default function Login() {
       });
 
       if (response.status === 201) {
-        const data = await response.json()
-        const user = await Cookies.set(data) || "access_token"
-        return user;
+        const data = response.json()
+        const token = ("access_token", data.token)
+        Cookies.set("access_token", token)
       } else {
         alert("failed");
       }
