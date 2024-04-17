@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
+import axios from "axios";
 import Navbar from "../../Components/Navbar";
 import { DataGrid } from "@mui/x-data-grid";
 import Box from "@mui/material/Box";
 
-export default function Koleksi() {
+export default function Kategori() {
   const token = Cookies.get("access_token") || "";
-  const [dataKoleksi, setDataKoleksi] = useState("");
+  const [dataKategori, setDataKategori] = useState("");
 
   async function fetchData() {
-    const apiUrl = `http://localhost:4000/koleksi`;
+    const apiUrl = `http://localhost:4000/kategori`;
 
     try {
-      setDataKoleksi([]);
+      setDataKategori([]);
       const response = await fetch(apiUrl, {
         method: "GET",
         headers: {
@@ -22,20 +23,20 @@ export default function Koleksi() {
 
       if (response.status === 200) {
         const data = await response.json();
-        setDataKoleksi(data);
+        setDataKategori(data);
       } else if (response.status === 404) {
-        setDataKoleksi([]);
+        setDataKategori([]);
       }
     } catch (error) {
-      setDataKoleksi(false);
+      setDataKategori(false);
     }
   }
 
   const columns = [
     {
-      field: "bukuId",
-      headerName: "Judul Buku",
-      width: 400,
+      field: "nama_kategori",
+      headerName: "Nama Kategori",
+      width: 900,
       editable: true,
     },
   ];
@@ -53,7 +54,7 @@ export default function Koleksi() {
           width: "100%",
         }}
       >
-        <a href="/koleksi/create">
+        <a href="/kategori/create">
           <button
             style={{
               marginRight: 80,
@@ -75,8 +76,8 @@ export default function Koleksi() {
       <center>
         <Box style={{ width: "90%", marginTop: 40 }}>
           <DataGrid
-            getRowId={(dataKoleksi) => dataKoleksi._id}
-            rows={dataKoleksi}
+            getRowId={(dataKategori) => dataKategori._id}
+            rows={dataKategori}
             columns={columns}
             initialState={{
               pagination: {

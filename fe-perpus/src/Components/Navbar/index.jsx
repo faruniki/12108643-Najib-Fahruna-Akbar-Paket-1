@@ -10,6 +10,7 @@ export default function Navbar() {
         <li><a href="/kategori">Kategori</a></li>
         <li><a href="/peminjaman">Peminjaman</a></li>
         <li><a href="/koleksi">Koleksi</a></li>
+        <li><a href="/review">Review</a></li>
       </div>
     </div>
   );

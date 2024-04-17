@@ -1,127 +1,117 @@
-import React, { useState } from "react";
-// import Cookies from "js-cookie";
+import React, { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 import axios from "axios";
 import Navbar from "../../Components/Navbar";
+import { DataGrid } from "@mui/x-data-grid";
+import Box from "@mui/material/Box";
 
 export default function Buku() {
-  const [judul, setJudul] = useState("");
-  const [penerbit, setPenerbit] = useState("");
-  const [penulis, setPenulis] = useState("");
-  const [tahun_terbit, setTahun_terbit] = useState("");
+  const token = Cookies.get("access_token") || "";
+  const [dataBuku, setDataBuku] = useState("");
+  async function fetchData() {
+    const apiUrl = `http://localhost:4000/buku`;
 
-  const handleSubmit = async () => {
     try {
-      const response = await axios.post("http://localhost:4000/buku/create", {
-        judul,
-        penerbit,
-        penulis,
-        tahun_terbit,
+      setDataBuku([]);
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (response.status === 200) {
-        alert("Buku berhasil ditambahkan");
-      } else {
-        alert("Gagal menambahkan buku");
+        const data = await response.json();
+        setDataBuku(data);
+      } else if (response.status === 404) {
+        setDataBuku([]);
       }
     } catch (error) {
-      console.log(error);
+      setDataBuku(false);
     }
-  };
+  }
+
+  const columns = [
+    {
+      field: "judul",
+      headerName: "Judul Buku",
+      width: 400,
+      editable: true,
+    },
+    {
+      field: "penulis",
+      headerName: "Penulis",
+      width: 300,
+      editable: true,
+    },
+    {
+      field: "penerbit",
+      headerName: "Penerbit",
+      width: 250,
+      editable: true,
+    },
+    {
+      field: "tahun_terbit",
+      headerName: "Tahun Terbit",
+      width: 150,
+      editable: true,
+    },
+    {
+      field: "kategori",
+      headerName: "Tahun Terbit",
+      width: 150,
+      editable: true,
+    },
+  ];
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div>
       <Navbar />
+      <div
+        style={{
+          textAlign: "right",
+          width: "100%",
+        }}
+      >
+        <a href="/buku/create">
+          <button
+            style={{
+              marginRight: 80,
+              marginTop: 40,
+              width: 80,
+              height: 30,
+              color: "#fff",
+              fontWeight: 600,
+              borderRadius: "5px",
+              letterSpacing: 1,
+              border: "1px solid #1944a1",
+              backgroundColor: "#1944a1",
+            }}
+          >
+            CREATE
+          </button>
+        </a>
+      </div>
       <center>
-        {/* <h1 style={{ marginTop: 40 }}>Login</h1> */}
-        <input
-          type="text"
-          placeholder="Judul"
-          onChange={(e) => setJudul(e.target.value)}
-          value={judul}
-          style={{
-            width: "400px",
-            height: "36px",
-            borderRadius: "5px",
-            border: "1px solid grey",
-            backgroundColor: "#f4f4f4",
-            padding: "2px 10px",
-            fontSize: "14px",
-            marginBottom: "10px",
-            marginTop: "100px",
-          }}
-        ></input>
-        <br />
-        <input
-          type="text"
-          placeholder="Penerbit"
-          onChange={(e) => setPenerbit(e.target.value)}
-          value={penerbit}
-          style={{
-            width: "400px",
-            height: "36px",
-            borderRadius: "5px",
-            border: "1px solid grey",
-            backgroundColor: "#f4f4f4",
-            padding: "2px 10px",
-            fontSize: "14px",
-            marginBottom: "10px",
-          }}
-        ></input>
-        <br />
-        <input
-          type="text"
-          placeholder="Penulis"
-          onChange={(e) => setPenulis(e.target.value)}
-          value={penulis}
-          style={{
-            width: "400px",
-            height: "36px",
-            borderRadius: "5px",
-            border: "1px solid grey",
-            backgroundColor: "#f4f4f4",
-            padding: "2px 10px",
-            fontSize: "14px",
-            marginBottom: "10px",
-          }}
-        ></input>
-        <br />
-        <input
-          type="text"
-          placeholder="Tahun Terbit"
-          onChange={(e) => setTahun_terbit(e.target.value)}
-          value={tahun_terbit}
-          style={{
-            width: "400px",
-            height: "36px",
-            borderRadius: "5px",
-            border: "1px solid grey",
-            backgroundColor: "#f4f4f4",
-            padding: "2px 10px",
-            fontSize: "14px",
-            marginBottom: "10px",
-          }}
-        ></input>
-        <br />
-        <button
-          type="submit"
-          onClick={handleSubmit}
-          style={{
-            width: "420px",
-            height: "36px",
-            borderRadius: "100px",
-            border: "1px solid grey",
-            backgroundColor: "#1944a1",
-            padding: "2px 10px",
-            fontSize: "14px",
-            marginTop: "30px",
-            color: "#fff",
-            fontWeight: 600,
-            letterSpacing: 1,
-          }}
-        >
-          Tambah
-        </button>
-        
+        <Box style={{ width: "90%", marginTop: 40 }}>
+          <DataGrid
+            getRowId={(dataBuku) => dataBuku._id}
+            rows={dataBuku}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 100,
+                },
+              },
+            }}
+            pageSizeOptions={[100]}
+          />
+        </Box>
       </center>
     </div>
   );

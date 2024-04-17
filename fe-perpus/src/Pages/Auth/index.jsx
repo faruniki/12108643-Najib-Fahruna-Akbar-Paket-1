@@ -7,22 +7,37 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:4000/auth/login", {
-        username,
-        password,
-      });
+      const response = await axios.post(
+        "http://localhost:4000/auth/login",
+        {
+          username: username,
+          password: password,
+        }
+      );
 
-      if (response.status === 201) {
-        const data = response.json()
-        const token = ("access_token", data.token)
-        Cookies.set("access_token", token)
+      if (response && response.data) {
+        if (response.status === 201) {
+          document.cookie = `access_token=${response.data.token}; path=/`;
+          setTimeout(() => {
+            window.location.href = "/buku";
+          }, 2000);
+          alert("Berhasil login")
+        } else if (response.status === 404) {
+          alert("Data tidak sesuai")
+        } else if (response.status === 500) {
+          alert("Ada masalah dengan server")
+        } else if (response.status === 401) {
+          alert("Ada masalah")
+        } else {
+          alert("Ada yang salah")
+        }
       } else {
-        alert("failed");
+        alert("Ada yang salah")
       }
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -50,7 +65,7 @@ export default function Login() {
         ></input>
         <br />
         <input
-          type="text"
+          type="password"
           placeholder="Password"
           onChange={(e) => setPassword(e.target.value)}
           value={password}

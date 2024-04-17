@@ -13,8 +13,8 @@ const peminjamanSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    default: "p",
-    enum: ["p", "k"],
+    default: "dipinjam",
+    enum: ["dipinjam", "dikembalikan"],
   },
 });
 

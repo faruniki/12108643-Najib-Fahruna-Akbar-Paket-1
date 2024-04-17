@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
+import axios from "axios";
 import Navbar from "../../Components/Navbar";
 import { DataGrid } from "@mui/x-data-grid";
 import Box from "@mui/material/Box";
 
-export default function Koleksi() {
+export default function Peminjaman() {
   const token = Cookies.get("access_token") || "";
-  const [dataKoleksi, setDataKoleksi] = useState("");
+  const [dataPeminjaman, setDataPeminjaman] = useState("");
 
   async function fetchData() {
-    const apiUrl = `http://localhost:4000/koleksi`;
+    const apiUrl = `http://localhost:4000/peminjaman`;
 
     try {
-      setDataKoleksi([]);
+      setDataPeminjaman([]);
       const response = await fetch(apiUrl, {
         method: "GET",
         headers: {
@@ -22,19 +23,31 @@ export default function Koleksi() {
 
       if (response.status === 200) {
         const data = await response.json();
-        setDataKoleksi(data);
+        setDataPeminjaman(data);
       } else if (response.status === 404) {
-        setDataKoleksi([]);
+        setDataPeminjaman([]);
       }
     } catch (error) {
-      setDataKoleksi(false);
+      setDataPeminjaman(false);
     }
   }
 
   const columns = [
     {
+      field: "userId",
+      headerName: "Pengirim",
+      width: 250,
+      editable: true,
+    },
+    {
       field: "bukuId",
       headerName: "Judul Buku",
+      width: 300,
+      editable: true,
+    },
+    {
+      field: "status",
+      headerName: "Status",
       width: 400,
       editable: true,
     },
@@ -53,7 +66,7 @@ export default function Koleksi() {
           width: "100%",
         }}
       >
-        <a href="/koleksi/create">
+        <a href="/Peminjaman/create">
           <button
             style={{
               marginRight: 80,
@@ -75,8 +88,8 @@ export default function Koleksi() {
       <center>
         <Box style={{ width: "90%", marginTop: 40 }}>
           <DataGrid
-            getRowId={(dataKoleksi) => dataKoleksi._id}
-            rows={dataKoleksi}
+            getRowId={(dataPeminjaman) => dataPeminjaman._id}
+            rows={dataPeminjaman}
             columns={columns}
             initialState={{
               pagination: {

@@ -1,24 +1,36 @@
-import React, { useState } from "react";
-// import Cookies from "js-cookie";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 import Navbar from "../../Components/Navbar";
 
-export default function Koleksi() {
+export default function AddKategori() {
+  const token = Cookies.get("token") || "";
+
   const [nama_kategori, setNama_kategori] = useState("");
 
   const handleSubmit = async () => {
+    const apiUrl = `http://localhost:4000/kategori/create`;
+
     try {
-      const response = await axios.post("http://localhost:4000/kategori/create", {
-        nama_kategori,
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+            nama_kategori
+          }),
       });
 
       if (response.status === 200) {
-        alert("Kategori berhasil ditambahkan");
+        alert("Data berhasil ditambah");
+      } else if (response.status === 400) {
+        alert("Gagal menambahkan data");
       } else {
-        alert("Gagal menambahkan kategori");
+        console.error("Failed to submit data");
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error during data submission", error);
     }
   };
 
