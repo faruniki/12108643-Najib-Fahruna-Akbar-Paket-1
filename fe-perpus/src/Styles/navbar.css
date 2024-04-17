@@ -1,0 +1,53 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    margin-top: px;
+    width: 100%;
+    height: 40px;
+    background-color: #1944a1;
+    display: flex;
+    justify-content: space-between;
+}
+
+.container .left {
+    float: left;
+    margin-left: 15px;
+    text-decoration: none;
+    color: #fff;
+    list-style: none;
+    width: 70%;
+    margin-top: 1.5vh;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.container .left span {
+    color: #fbff1d;
+}
+
+.container .right {
+    float: right;
+    display: flex;
+    text-decoration: none;
+    color: #fff;
+    list-style: none;
+    width: 30%;
+    justify-content: space-around;
+    margin-top: 1.5vh;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.container .right li a {
+    text-decoration: none;
+    color: #fff;
+}
+
+.container .right li a:hover {
+    color: #fbff1d;
+}
