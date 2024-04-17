@@ -6,7 +6,8 @@ export default function Logbar() {
     <div className="container">
       <div className="left">Perpustakaan <span>Express</span></div>
       <div className="right">
-        <li>List Buku</li>
+        <li>Buku</li>
+        <li>Kategori</li>
         <li>Peminjaman</li>
         <li>Koleksi</li>
       </div>

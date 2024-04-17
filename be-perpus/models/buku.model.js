@@ -17,6 +17,10 @@ const bukuSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  kategori: {
+    type: String,
+    required: false,
+  },
 });
 
 module.exports = mongoose.model("Buku", bukuSchema);

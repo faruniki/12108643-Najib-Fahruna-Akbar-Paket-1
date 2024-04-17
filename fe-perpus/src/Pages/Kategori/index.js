@@ -4,20 +4,18 @@ import axios from "axios";
 import Navbar from "../../Components/Navbar";
 
 export default function Koleksi() {
-  const [userId, setUserId] = useState("");
-  const [bookId, setBookId] = useState("");
+  const [nama_kategori, setNama_kategori] = useState("");
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post("http://localhost:4000/koleksi/create", {
-        userId,
-        bookId,
+      const response = await axios.post("http://localhost:4000/kategori/create", {
+        nama_kategori,
       });
 
       if (response.status === 200) {
-        alert("Koleksi berhasil ditambahkan");
+        alert("Kategori berhasil ditambahkan");
       } else {
-        alert("Gagal menambahkan koleksi");
+        alert("Gagal menambahkan kategori");
       }
     } catch (error) {
       console.log(error);
@@ -31,9 +29,9 @@ export default function Koleksi() {
         {/* <h1 style={{ marginTop: 40 }}>Login</h1> */}
         <input
           type="text"
-          placeholder="User ID"
-          onChange={(e) => setUserId(e.target.value)}
-          value={userId}
+          placeholder="Nama Kategori"
+          onChange={(e) => setNama_kategori(e.target.value)}
+          value={nama_kategori}
           style={{
             width: "400px",
             height: "36px",
@@ -44,23 +42,6 @@ export default function Koleksi() {
             fontSize: "14px",
             marginBottom: "10px",
             marginTop: "100px",
-          }}
-        ></input>
-        <br />
-        <input
-          type="text"
-          placeholder="Book ID"
-          onChange={(e) => setBookId(e.target.value)}
-          value={bookId}
-          style={{
-            width: "400px",
-            height: "36px",
-            borderRadius: "5px",
-            border: "1px solid grey",
-            backgroundColor: "#f4f4f4",
-            padding: "2px 10px",
-            fontSize: "14px",
-            marginBottom: "10px",
           }}
         ></input>
         <br />
