@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import Navbar from "../../Components/Navbar";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridActionsCell } from "@mui/x-data-grid";
 import Box from "@mui/material/Box";
 
 export default function Buku() {
@@ -52,12 +52,6 @@ export default function Buku() {
     },
     {
       field: "tahun_terbit",
-      headerName: "Tahun Terbit",
-      width: 150,
-      editable: true,
-    },
-    {
-      field: "kategori",
       headerName: "Tahun Terbit",
       width: 150,
       editable: true,

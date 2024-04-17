@@ -35,7 +35,7 @@ export default function Peminjaman() {
   const columns = [
     {
       field: "userId",
-      headerName: "Pengirim",
+      headerName: "Peminjam",
       width: 250,
       editable: true,
     },

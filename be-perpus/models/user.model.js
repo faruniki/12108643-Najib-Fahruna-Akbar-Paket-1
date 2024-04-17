@@ -25,6 +25,11 @@ const userSchema = new mongoose.Schema({
     default: "u",
     enum: ["a", "p", 'u'],
   },
+  address: {
+    type: String,
+    trim: true,
+    required: false,
+  },
 });
 
 userSchema.statics.findByCredentials = async function (username, password) {
