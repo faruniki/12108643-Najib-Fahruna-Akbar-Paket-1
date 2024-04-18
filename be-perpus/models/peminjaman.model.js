@@ -17,12 +17,14 @@ const peminjamanSchema = new mongoose.Schema({
     enum: ["dipinjam", "dikembalikan"],
   },
   tanggal_peminjaman: {
-    type: Date,
+    type: String,
     required: true,
+    trim: true,
   },
   tanggal_pengembalian: {
-    type: Date,
+    type: String,
     required: false,
+    trim: true,
   },
 });
 

@@ -124,7 +124,14 @@ export default function Review() {
 
   const exportToExcel = () => {
     const wb = XLSX.utils.book();
-    const ws = XLSX.utils.json_to_sheet(dataReview);
+    const ws = XLSX.utils.json_to_sheet(dataReview.map(item => ({
+      userId: item.userId.username,
+      bukuId: item.bukuId.judul,
+      review: item.review,
+      rating: item.rating,
+      
+    })));
+    
     XLSX.utils.book_append_sheet(wb, ws, "Data Review");
     XLSX.writeFile(wb, "data_ulasan.xlsx");
   };

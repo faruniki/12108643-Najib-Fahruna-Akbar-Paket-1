@@ -97,6 +97,34 @@ export default function Buku() {
     profile();
   }, []);
 
+  const [dataKategori, setDataKategori] = useState([]);
+
+  async function fetchKategori() {
+    const apiUrl = `http://localhost:4000/kategori`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setDataKategori(data);
+      } else {
+        console.error("Failed to fetch books");
+      }
+    } catch (error) {
+      console.error("Error fetching books: ", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchKategori();
+  }, []);
+
   const columns = [
     {
       field: "judul",
@@ -120,7 +148,7 @@ export default function Buku() {
     },
     {
       field: "gambar",
-      headerName: "Tahun Terbit",
+      headerName: "Gambar",
       width: 150,
       renderCell: (params) => {
         if (params.row.kategoriId) {
@@ -204,7 +232,15 @@ export default function Buku() {
 
   const exportToExcel = () => {
     const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(dataBuku);
+    const ws = XLSX.utils.json_to_sheet(
+      dataBuku.map((item) => ({
+        judul: item.judul,
+        penulis: item.penulis,
+        penerbit: item.penerbit,
+        tahun_terbit: item.tahun_terbit,
+      }))
+    );
+
     XLSX.utils.book_append_sheet(wb, ws, "Data Buku");
     XLSX.writeFile(wb, "data_buku.xlsx");
   };
@@ -324,6 +360,38 @@ export default function Buku() {
             value={editedBook.tahun_terbit}
             onChange={(e) =>
               setEditedBook({ ...editedBook, tahun_terbit: e.target.value })
+            }
+            sx={{ mb: 2 }}
+          />
+          <select
+            value={editedBook.kategoriId}
+            onChange={(e) =>
+              setEditedBook({ ...editedBook, kategoriId: e.target.value })
+            }
+            style={{
+              width: "400px",
+              height: "60px",
+              borderRadius: "5px",
+              border: "1px solid grey",
+              backgroundColor: "#f4f4f4",
+              padding: "2px 10px",
+              fontSize: "14px",
+              marginBottom: "10px",
+            }}
+          >
+            <option value="">Pilih Kategori</option>
+            {dataKategori.map((kategori) => (
+              <option key={kategori._id} value={kategori._id}>
+                {kategori.nama_kategori}
+              </option>
+            ))}
+          </select>
+          <TextField
+            label="Gambar"
+            fullWidth
+            value={editedBook.gambar}
+            onChange={(e) =>
+              setEditedBook({ ...editedBook, gambar: e.target.value })
             }
             sx={{ mb: 2 }}
           />

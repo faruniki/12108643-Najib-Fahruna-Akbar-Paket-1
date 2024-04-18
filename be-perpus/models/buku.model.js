@@ -20,7 +20,7 @@ const bukuSchema = new mongoose.Schema({
   kategoriId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Kategori",
-    required: false,
+    required: true,
   },
   gambar: {
     type: String,
