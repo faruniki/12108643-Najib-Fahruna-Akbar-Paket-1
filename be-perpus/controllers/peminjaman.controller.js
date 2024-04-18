@@ -13,21 +13,22 @@ peminjamanController.create = async (req, res) => {
 
 peminjamanController.findAll = async (req, res) => {
     try {
-        const peminjaman = await Peminjaman.find();
-        res.status(200).send(peminjaman)
+        const peminjaman = await Peminjaman.find().populate('userId').populate('bukuId');
+        res.status(200).send(peminjaman);
     } catch (error) {
-        res.status(400).send(error)
+        res.status(400).send(error);
     }
 }
 
 peminjamanController.findById = async (req, res) => {
     try {
-        const peminjaman = await Peminjaman.findById(req.params.id, req.body);
-        res.status(200).send(peminjaman)
+        const peminjaman = await Peminjaman.findById(req.params.id).populate('userId').populate('bukuId');
+        res.status(200).send(peminjaman);
     } catch (error) {
-        res.status(400).send(error)
+        res.status(400).send(error);
     }
 }
+
 
 peminjamanController.delete = async (req, res) => {
     try {

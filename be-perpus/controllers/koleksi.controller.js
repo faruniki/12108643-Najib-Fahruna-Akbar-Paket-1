@@ -13,7 +13,7 @@ koleksiController.create = async (req, res) => {
 
 koleksiController.findAll = async (req, res) => {
     try {
-        const koleksi = await Koleksi.find();
+        const koleksi = await Koleksi.find().populate('bukuId');
         res.status(200).send(koleksi)
     } catch (error) {
         res.status(400).send(error)
@@ -22,7 +22,7 @@ koleksiController.findAll = async (req, res) => {
 
 koleksiController.findById = async (req, res) => {
     try {
-        const koleksi = await Koleksi.findById(req.params.id, req.body);
+        const koleksi = await Koleksi.findById(req.params.id, req.body).populate('bukuId');
         res.status(200).send(koleksi)
     } catch (error) {
         res.status(400).send(error)

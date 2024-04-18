@@ -24,6 +24,7 @@ export default function AddKategori() {
 
       if (response.status === 200) {
         alert("Data berhasil ditambah");
+        window.location.replace("/kategori");
     } else if (response.status === 400) {
         alert("Gagal mengubah data");
       } else {

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Cookies from "js-cookie";
 import axios from "axios";
 import Logbar from "../../Components/Logbar";
+import Footer from "../../Components/footer";
 
 export default function Login() {
   const [username, setUsername] = useState("");

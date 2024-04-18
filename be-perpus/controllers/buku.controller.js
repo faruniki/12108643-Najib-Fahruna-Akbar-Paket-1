@@ -13,7 +13,7 @@ bukuController.create = async (req, res) => {
 
 bukuController.findAll = async (req, res) => {
     try {
-        const buku = await Buku.find();
+        const buku = await Buku.find().populate('kategoriId');
         res.status(200).send(buku)
     } catch (error) {
         res.status(400).send(error)

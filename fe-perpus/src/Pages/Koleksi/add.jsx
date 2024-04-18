@@ -8,6 +8,8 @@ export default function AddKoleksi() {
   const [userId, setUserId] = useState("");
   const [bukuId, setBukuId] = useState("");
 
+  const [dataBuku, setDataBuku] = useState([]);
+
   const handleSubmit = async () => {
     const apiUrl = `http://localhost:4000/koleksi/create`;
 
@@ -26,6 +28,7 @@ export default function AddKoleksi() {
 
       if (response.status === 200) {
         alert("Data berhasil ditambah");
+        window.location.replace("/koleksi");
       } else if (response.status === 400) {
         alert("Gagal mengubah data");
       } else {
@@ -63,18 +66,41 @@ export default function AddKoleksi() {
     profile();
   }, []);
 
+  async function fetchBuku() {
+    const apiUrl = `http://localhost:4000/buku`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setDataBuku(data);
+      } else {
+        console.error("Failed to fetch books");
+      }
+    } catch (error) {
+      console.error("Error fetching books: ", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchBuku();
+  }, []);
+
   return (
     <div>
       <Navbar />
       <center>
-        {/* <h1 style={{ marginTop: 40 }}>Login</h1> */}
-        <input
-          type="text"
-          placeholder="Judul Buku"
+      <select
           onChange={(e) => setBukuId(e.target.value)}
           value={bukuId}
           style={{
-            width: "400px",
+            width: "420px",
             height: "36px",
             borderRadius: "5px",
             border: "1px solid grey",
@@ -84,7 +110,14 @@ export default function AddKoleksi() {
             marginBottom: "10px",
             marginTop: "100px",
           }}
-        ></input>
+        >
+          <option value="">Pilih Buku</option>
+          {dataBuku.map((buku) => (
+            <option key={buku._id} value={buku._id}>
+              {buku.judul}
+            </option>
+          ))}
+        </select>
         <br />
         <button
           type="submit"

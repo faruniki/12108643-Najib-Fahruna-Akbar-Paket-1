@@ -6,6 +6,7 @@ import Login from "./Pages/Auth";
 import Register from "./Pages/Auth/register";
 
 import Users from "./Pages/Users";
+import AddUsers from "./Pages/Users/add";
 
 import Buku from "./Pages/Buku";
 import AddBuku from "./Pages/Buku/add";
@@ -27,7 +28,7 @@ import AddPeminjaman from "./Pages/Peminjaman/add";
 function App() {
   const token = Cookies.get("access_token") || "";
 
-  const [userRole, setUserRole] = useState("");
+  const [role, setRole] = useState("");
   async function profile() {
     const apiUrl = `http://localhost:4000/auth/profile`;
 
@@ -41,12 +42,12 @@ function App() {
 
       if (response.status === 200) {
         const data = await response.json();
-        setUserRole(data.role);
+        setRole(data.role);
       } else if (response.status === 404) {
-        setUserRole([]);
+        setRole([]);
       }
     } catch (error) {
-      setUserRole(false);
+      setRole(false);
     }
   }
 
@@ -58,11 +59,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" Component={Login} />
-        if (userRole === "a") {
-          <Route path="/register" Component={Register} />
-        }{" "}
-        else {null}
         <Route path="/users" Component={Users} />
+        <Route path="/users/create" Component={AddUsers} />
         <Route path="/buku" Component={Buku} />
         <Route path="/buku/create" Component={AddBuku} />
         <Route path="/buku/update" Component={UpdateBuku} />

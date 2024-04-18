@@ -5,7 +5,7 @@ const auth = async (req, res, next) => {
     try {
         const token = req.header('Authorization').replace('Bearer ', '');
         const decoded = await jwt.verify(token, "access_token");
-        const user = await User.findOne({user: decoded.user})
+        const user = await User.findById(decoded.userId); 
 
         if(!user || !['a', 'p', 'u'].includes(user.role)) throw new Error ('Unauthorized');
 

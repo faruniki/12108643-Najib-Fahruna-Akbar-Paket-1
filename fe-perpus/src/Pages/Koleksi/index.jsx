@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
+import * as XLSX from "xlsx";
 import Navbar from "../../Components/Navbar";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import Box from "@mui/material/Box";
@@ -32,12 +33,26 @@ export default function Koleksi() {
     }
   }
 
+  const exportToExcel = () => {
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(dataKoleksi);
+    XLSX.utils.book_append_sheet(wb, ws, "Data Koleksi");
+    XLSX.writeFile(wb, "data_koleksi.xlsx");
+  };
+
   const columns = [
     {
       field: "bukuId",
       headerName: "Judul Buku",
-      width: 400,
+      width: 800,
       editable: true,
+      renderCell: (params) => {
+        if (params.row.bukuId) {
+          return params.row.bukuId.judul;
+        } else {
+          return "N/A";
+        }
+      },
     },
     {
       width: 200,
@@ -88,12 +103,15 @@ export default function Koleksi() {
         style={{
           textAlign: "right",
           width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
         }}
       >
-        <a href="/koleksi/create">
+        <h2 style={{ marginTop: 40, marginLeft: "5%" }}>Koleksi</h2>
+        <div>
           <button
             style={{
-              marginRight: 80,
+              marginRight: 10,
               marginTop: 40,
               width: 80,
               height: 30,
@@ -104,10 +122,29 @@ export default function Koleksi() {
               border: "1px solid #1944a1",
               backgroundColor: "#1944a1",
             }}
+            onClick={exportToExcel}
           >
-            CREATE
+            EXPORT
           </button>
-        </a>
+          <a href="/koleksi/create">
+            <button
+              style={{
+                marginRight: 80,
+                marginTop: 40,
+                width: 80,
+                height: 30,
+                color: "#fff",
+                fontWeight: 600,
+                borderRadius: "5px",
+                letterSpacing: 1,
+                border: "1px solid #1944a1",
+                backgroundColor: "#1944a1",
+              }}
+            >
+              CREATE
+            </button>
+          </a>
+        </div>
       </div>
       <center>
         <Box style={{ width: "90%", marginTop: 40 }}>
@@ -123,7 +160,6 @@ export default function Koleksi() {
               },
             }}
             pageSizeOptions={[100]}
-            slots={{ toolbar: GridToolbar }}
           />
         </Box>
       </center>

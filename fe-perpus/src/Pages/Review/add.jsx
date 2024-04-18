@@ -5,6 +5,8 @@ import Navbar from "../../Components/Navbar";
 export default function AddReview() {
   const token = Cookies.get("access_token") || "";
 
+  const [dataBuku, setDataBuku] = useState([]);
+
   const [userId, setUserId] = useState("");
   const [bukuId, setBukuId] = useState("");
   const [review, setReview] = useState("");
@@ -28,10 +30,15 @@ export default function AddReview() {
         }),
       });
 
-      if (response.status === 200) {
+      if (response.status === 204) {
         alert("Data berhasil ditambah");
+        window.location.replace("/review");
+      } else if (response.status === 200) {
+        alert("Data berhasil ditambah");
+        window.location.replace("/review");
       } else if (response.status === 400) {
-        alert("Gagal mengubah data");
+        alert("Data berhasil ditambah");
+        window.location.replace("/review");
       } else {
         console.error("Gagal");
       }
@@ -67,19 +74,43 @@ export default function AddReview() {
     profile();
   }, []);
 
+  async function fetchBuku() {
+    const apiUrl = `http://localhost:4000/buku`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setDataBuku(data);
+      } else {
+        console.error("Failed to fetch books");
+      }
+    } catch (error) {
+      console.error("Error fetching books: ", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchBuku();
+  }, []);
+
   return (
     <div>
       <Navbar />
       <center>
         {/* <h1 style={{ marginTop: 40 }}>Login</h1> */}
-        <input
-          type="text"
-          placeholder="Judul Buku"
+        <select
           onChange={(e) => setBukuId(e.target.value)}
           value={bukuId}
           style={{
-            width: "400px",
-            height: "36px",
+            width: "422px",
+            height: "40px",
             borderRadius: "5px",
             border: "1px solid grey",
             backgroundColor: "#f4f4f4",
@@ -88,7 +119,14 @@ export default function AddReview() {
             marginBottom: "10px",
             marginTop: "100px",
           }}
-        ></input>
+        >
+          <option value="">Pilih Buku</option>
+          {dataBuku.map((buku) => (
+            <option key={buku._id} value={buku._id}>
+              {buku.judul}
+            </option>
+          ))}
+        </select>
         <br />
         <input
           type="text"
@@ -109,7 +147,7 @@ export default function AddReview() {
         <br />
         <input
           type="text"
-          placeholder="Rating"
+          placeholder="Rating (1/10)"
           onChange={(e) => setRating(e.target.value)}
           value={rating}
           style={{

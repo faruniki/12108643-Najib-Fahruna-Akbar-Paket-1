@@ -4,7 +4,7 @@ const reviewController = {};
 
 reviewController.create = async (req, res) => {
     try {
-        const review = await Review.create(req.body);
+        const review = await Review.create(req.body).populate('userId').populate('bukuId');
         res.status(200).send(review)
     } catch (error) {
         res.status(400).send(error)
@@ -13,7 +13,7 @@ reviewController.create = async (req, res) => {
 
 reviewController.findAll = async (req, res) => {
     try {
-        const review = await Review.find();
+        const review = await Review.find().populate('userId').populate('bukuId');
         res.status(200).send(review)
     } catch (error) {
         res.status(400).send(error)

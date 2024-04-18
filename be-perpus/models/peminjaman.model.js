@@ -16,6 +16,14 @@ const peminjamanSchema = new mongoose.Schema({
     default: "dipinjam",
     enum: ["dipinjam", "dikembalikan"],
   },
+  tanggal_peminjaman: {
+    type: Date,
+    required: true,
+  },
+  tanggal_pengembalian: {
+    type: Date,
+    required: false,
+  },
 });
 
 module.exports = mongoose.model("Peminjaman", peminjamanSchema);
