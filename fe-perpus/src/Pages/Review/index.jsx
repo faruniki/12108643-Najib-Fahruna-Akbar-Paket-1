@@ -9,6 +9,11 @@ import { Button, Modal, TextField } from "@mui/material";
 export default function Review() {
   const token = Cookies.get("access_token") || "";
   const [dataReview, setDataReview] = useState("");
+  const [dataBuku, setDataBuku] = useState([]);
+  const [editedReview, setEditedReview] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [role, setRole] = useState("");
+  const [idUser, setIdUser] = useState("");
 
   async function fetchData() {
     const apiUrl = `http://localhost:4000/review`;
@@ -33,10 +38,56 @@ export default function Review() {
     }
   }
 
-  const [dataBuku, setDataBuku] = useState([]);
+  async function fetchBuku() {
+    const apiUrl = `http://localhost:4000/buku`;
 
-  const [editedReview, setEditedReview] = useState({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setDataBuku(data);
+      } else {
+        console.error("Failed to fetch reviews");
+      }
+    } catch (error) {
+      console.error("Error fetching reviews: ", error);
+    }
+  }
+
+  async function profile() {
+    const apiUrl = `http://localhost:4000/auth/profile`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        setRole(data.role);
+        setIdUser(data._id);
+      } else if (response.status === 404) {
+        setRole("");
+      }
+    } catch (error) {
+      setRole("");
+    }
+  }
+
+  useEffect(() => {
+    fetchData();
+    fetchBuku();
+    profile();
+  }, []);
 
   const handleOpenModal = (review) => {
     setEditedReview(review);
@@ -73,65 +124,44 @@ export default function Review() {
     }
   };
 
-  async function fetchBuku() {
-    const apiUrl = `http://localhost:4000/buku`;
-
+  const onClickDelete = async (id) => {
     try {
-      const response = await fetch(apiUrl, {
-        method: "GET",
+      const response = await fetch(`http://localhost:4000/review/${id}`, {
+        method: "DELETE",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        setDataBuku(data);
+      if (
+        response.status === 201 ||
+        response.status === 204 ||
+        response.status === 200
+      ) {
+        alert("Data berhasil dihapus");
+        fetchData();
+      } else if (response.status === 400) {
+        alert("Gagal mengubah data");
       } else {
-        console.error("Failed to fetch reviews");
+        console.log("Gagal");
       }
     } catch (error) {
-      console.error("Error fetching reviews: ", error);
+      console.error("Error: ", error);
     }
-  }
-
-  useEffect(() => {
-    fetchBuku();
-  }, []);
-
-  async function profile() {
-    const apiUrl = `http://localhost:4000/auth/profile`;
-
-    try {
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.status === 200) {
-        const data = await response.json();
-        setEditedReview({ ...editedReview, userId: data._id });
-      } else if (response.status === 404) {
-      }
-    } catch (error) {}
-  }
-
-  useEffect(() => {
-    profile();
-  }, []);
+  };
 
   const exportToExcel = () => {
     const wb = XLSX.utils.book();
-    const ws = XLSX.utils.json_to_sheet(dataReview.map(item => ({
-      userId: item.userId.username,
-      bukuId: item.bukuId.judul,
-      review: item.review,
-      rating: item.rating,
-      
-    })));
-    
+    const ws = XLSX.utils.json_to_sheet(
+      dataReview.map((item) => ({
+        userId: item.userId.username,
+        bukuId: item.bukuId.judul,
+        review: item.review,
+        rating: item.rating,
+      }))
+    );
+
     XLSX.utils.book_append_sheet(wb, ws, "Data Review");
     XLSX.writeFile(wb, "data_ulasan.xlsx");
   };
@@ -179,79 +209,21 @@ export default function Review() {
       headerName: "Action",
       sortable: false,
       renderCell: (params) => {
-        const onClickDelete = () => {
-          const id = params.id;
-          try {
-            const response = fetch(`http://localhost:4000/review/${id}`, {
-              method: "DELETE",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            });
-
-            if (response.status === 201 || 204) {
-              alert("Data berhasil dihapus");
-              fetchData();
-            } else if (response.status === 400) {
-              alert("Gagal mengubah data");
-            } else {
-              console.log("Gagal");
-            }
-          } catch (error) {
-            console.error("Error: ", error);
-          }
-        };
-
-        const onClickEdit = () => {
-          handleOpenModal(params.row);
-        };
-
-        return (
-          <div>
-            {(role === "p" || role === "a") && (
-              <div>
-                {/* <Button onClick={onClickEdit}>EDIT</Button> */}
-                <Button onClick={onClickDelete}>HAPUS</Button>
-              </div>
-            )}
-          </div>
-        );
+        if (params.row.userId?._id === idUser) {
+          return (
+            <div>
+              <Button onClick={() => handleOpenModal(params.row)}>EDIT</Button>
+              <Button onClick={() => onClickDelete(params.row._id)}>
+                HAPUS
+              </Button>
+            </div>
+          );
+        } else {
+          return null;
+        }
       },
     },
   ];
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const [role, setRole] = useState("");
-
-  async function profile() {
-    const apiUrl = `http://localhost:4000/auth/profile`;
-
-    try {
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.status === 200) {
-        const data = await response.json();
-        setRole(data.role);
-      } else if (response.status === 404) {
-        setRole("");
-      }
-    } catch (error) {
-      setRole("");
-    }
-  }
-
-  useEffect(() => {
-    profile();
-  }, []);
 
   return (
     <div>
@@ -266,43 +238,43 @@ export default function Review() {
       >
         <h2 style={{ marginTop: 40, marginLeft: "5%" }}>Review</h2>
         <div>
-          {(role === "p" || role === "a") && (
-            <button
-              style={{
-                marginRight: 10,
-                marginTop: 40,
-                width: 80,
-                height: 30,
-                color: "#fff",
-                fontWeight: 600,
-                borderRadius: "5px",
-                letterSpacing: 1,
-                border: "1px solid #1944a1",
-                backgroundColor: "#1944a1",
-              }}
-              onClick={exportToExcel}
-            >
-              EXPORT
-            </button>
+          <button
+            style={{
+              marginRight: 10,
+              marginTop: 40,
+              width: 80,
+              height: 30,
+              color: "#fff",
+              fontWeight: 600,
+              borderRadius: "5px",
+              letterSpacing: 1,
+              border: "1px solid #1944a1",
+              backgroundColor: "#1944a1",
+            }}
+            onClick={exportToExcel}
+          >
+            EXPORT
+          </button>
+          {role === "u" && (
+            <a href="/review/create">
+              <button
+                style={{
+                  marginRight: 80,
+                  marginTop: 40,
+                  width: 80,
+                  height: 30,
+                  color: "#fff",
+                  fontWeight: 600,
+                  borderRadius: "5px",
+                  letterSpacing: 1,
+                  border: "1px solid #1944a1",
+                  backgroundColor: "#1944a1",
+                }}
+              >
+                CREATE
+              </button>
+            </a>
           )}
-          <a href="/review/create">
-            <button
-              style={{
-                marginRight: 80,
-                marginTop: 40,
-                width: 80,
-                height: 30,
-                color: "#fff",
-                fontWeight: 600,
-                borderRadius: "5px",
-                letterSpacing: 1,
-                border: "1px solid #1944a1",
-                backgroundColor: "#1944a1",
-              }}
-            >
-              CREATE
-            </button>
-          </a>
         </div>
       </div>
       <center>

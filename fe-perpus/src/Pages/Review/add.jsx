@@ -75,7 +75,7 @@ export default function AddReview() {
   }, []);
 
   async function fetchBuku() {
-    const apiUrl = `http://localhost:4000/buku`;
+    const apiUrl = `http://localhost:4000/peminjaman`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -121,11 +121,17 @@ export default function AddReview() {
           }}
         >
           <option value="">Pilih Buku</option>
-          {dataBuku.map((buku) => (
-            <option key={buku._id} value={buku._id}>
-              {buku.judul}
-            </option>
-          ))}
+          {dataBuku
+            .filter(
+              (buku, index, self) =>
+                index ===
+                self.findIndex((t) => t.bukuId._id === buku.bukuId._id)
+            )
+            .map((buku) => (
+              <option key={buku.bukuId._id} value={buku.bukuId._id}>
+                {buku.bukuId.judul}
+              </option>
+            ))}
         </select>
         <br />
         <input
@@ -146,9 +152,14 @@ export default function AddReview() {
         ></input>
         <br />
         <input
-          type="text"
-          placeholder="Rating (1/10)"
-          onChange={(e) => setRating(e.target.value)}
+          type="number"
+          placeholder="Rating"
+          onChange={(e) => {
+            const value = e.target.value.trim();
+            if (value === "" || (!isNaN(value) && value >= 1 && value <= 10)) {
+              setRating(value);
+            }
+          }}
           value={rating}
           style={{
             width: "400px",
@@ -160,7 +171,8 @@ export default function AddReview() {
             fontSize: "14px",
             marginBottom: "10px",
           }}
-        ></input>
+        />
+
         <br />
         <button
           type="submit"

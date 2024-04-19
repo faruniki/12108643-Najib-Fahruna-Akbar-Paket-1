@@ -5,17 +5,18 @@ import { Button, Modal, TextField } from "@mui/material";
 
 
 export default function AddPeminjaman() {
-  const token = Cookies.get("access_token") || "";
+  const token = Cookies.get("access_token") || ""
 
-  const [dataBuku, setDataBuku] = useState([]);
-  const [dataUsers, setDataUsers] = useState([]);
+  const [dataBuku, setDataBuku] = useState([])
+  const [dataUsers, setDataUsers] = useState([])
+  const [dataPeminjaman, setDataPeminjaman] = useState([])
 
-  const [userId, setUserId] = useState("");
-  const [bukuId, setBukuId] = useState("");
-  const [tanggal_peminjaman, setTanggal_peminjaman] = useState("");
+  const [userId, setUserId] = useState("")
+  const [bukuId, setBukuId] = useState("")
+  const [tanggal_peminjaman, setTanggal_peminjaman] = useState("")
 
   const handleSubmit = async () => {
-    const apiUrl = `http://localhost:4000/peminjaman/create`;
+    const apiUrl = `http://localhost:4000/peminjaman/create`
 
     try {
       const response = await fetch(apiUrl, {
@@ -29,23 +30,46 @@ export default function AddPeminjaman() {
           bukuId,
           tanggal_peminjaman,
         }),
-      });
+      })
 
       if (response.status === 200) {
-        alert("Data berhasil ditambah");
-        window.location.replace("/peminjaman");
+        alert("Data berhasil ditambah")
+        window.location.replace("/peminjaman")
       } else if (response.status === 400) {
-        alert("Gagal mengubah data");
+        alert("Gagal mengubah data")
       } else {
-        console.error("Gagal");
+        console.error("Gagal")
       }
     } catch (error) {
-      console.error("Error: ", error);
+      console.error("Error: ", error)
     }
-  };
+  }
+
+  async function fetchPeminjaman() {
+    const apiUrl = `http://localhost:4000/peminjaman/admin`
+
+    try {
+      setDataPeminjaman([])
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (response.status === 200) {
+        const data = await response.json()
+        setDataPeminjaman(data)
+      } else if (response.status === 404) {
+        setDataPeminjaman([])
+      }
+    } catch (error) {
+      setDataPeminjaman(false)
+    }
+  }
 
   async function fetchUsers() {
-    const apiUrl = `http://localhost:4000/auth`;
+    const apiUrl = `http://localhost:4000/auth`
 
     try {
       const response = await fetch(apiUrl, {
@@ -53,21 +77,21 @@ export default function AddPeminjaman() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
+      })
 
       if (response.ok) {
-        const data = await response.json();
-        setDataUsers(data);
+        const data = await response.json()
+        setDataUsers(data)
       } else {
-        console.error("Failed to fetch users");
+        console.error("Failed to fetch users")
       }
     } catch (error) {
-      console.error("Error fetching users: ", error);
+      console.error("Error fetching users: ", error)
     }
   }
 
   async function fetchBuku() {
-    const apiUrl = `http://localhost:4000/buku`;
+    const apiUrl = `http://localhost:4000/buku`
 
     try {
       const response = await fetch(apiUrl, {
@@ -75,28 +99,29 @@ export default function AddPeminjaman() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
+      })
 
       if (response.ok) {
-        const data = await response.json();
-        setDataBuku(data);
+        const data = await response.json()
+        setDataBuku(data)
       } else {
-        console.error("Failed to fetch books");
+        console.error("Failed to fetch books")
       }
     } catch (error) {
-      console.error("Error fetching books: ", error);
+      console.error("Error fetching books: ", error)
     }
   }
 
   useEffect(() => {
-    fetchUsers();
-    fetchBuku();
-  }, []);
+    fetchUsers()
+    fetchBuku()
+    fetchPeminjaman()
+  }, [])
 
-  const [ role, setRole ] = useState("");
+  const [role, setRole] = useState("")
 
   async function profile() {
-    const apiUrl = `http://localhost:4000/auth/profile`;
+    const apiUrl = `http://localhost:4000/auth/profile`
 
     try {
       const response = await fetch(apiUrl, {
@@ -104,20 +129,20 @@ export default function AddPeminjaman() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
+      })
 
       if (response.status === 200) {
-        const data = await response.json();
-        setUserId(data._id);
+        const data = await response.json()
+        setUserId(data._id)
       } else if (response.status === 404) {
       }
-    } catch (error) {}
+    } catch (error) {
+    }
   }
 
-  
   useEffect(() => {
-    profile();
-  }, []);
+    profile()
+  }, [])
 
   return (
     <div>
@@ -140,15 +165,17 @@ export default function AddPeminjaman() {
           }}
         >
           <option value="">Pilih Buku</option>
-          {dataBuku.map((buku) => (
-            <option key={buku._id} value={buku._id}>
-              {buku.judul}
-            </option>
-          ))}
+          {dataBuku
+            .filter((buku) => !dataPeminjaman.some((peminjaman) => peminjaman.bukuId._id === buku._id && peminjaman.status === "dipinjam"))
+            .map((buku) => (
+              <option key={buku._id} value={buku._id}>
+                {buku.judul}
+              </option>
+            ))}
         </select>
         <br />
         <input
-          type="date"
+          type="datetime-local"
           placeholder="Tanggal Peminjaman"
           onChange={(e) => setTanggal_peminjaman(e.target.value)}
           value={tanggal_peminjaman}
@@ -163,7 +190,7 @@ export default function AddPeminjaman() {
             marginBottom: "10px",
             marginTop: "10px",
           }}
-        ></input>
+        />
         <br />
         <button
           type="submit"
@@ -186,5 +213,5 @@ export default function AddPeminjaman() {
         </button>
       </center>
     </div>
-  );
+  )
 }

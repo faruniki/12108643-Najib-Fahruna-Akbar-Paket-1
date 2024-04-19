@@ -4,7 +4,7 @@ import * as XLSX from "xlsx";
 import Navbar from "../../Components/Navbar";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import Box from "@mui/material/Box";
-import { Button } from "@mui/material";
+import { Button, Modal, TextField } from "@mui/material";
 
 export default function Kategori() {
   const token = Cookies.get("access_token") || "";
@@ -40,22 +40,62 @@ export default function Kategori() {
     XLSX.writeFile(wb, "data_kategori.xlsx");
   };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editedKategori, setEditedKategori] = useState({});
+  
+  const handleOpenModal = (kategori) => {
+    setEditedKategori(kategori);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:4000/kategori/${editedKategori._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(editedKategori),
+        }
+      );
+
+      if (response.status === 200) {
+        alert("Data berhasil diperbarui");
+        handleCloseModal();
+        fetchData();
+      } else {
+        alert("Gagal mengubah data");
+      }
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  };
+
   const columns = [
     {
       field: "nama_kategori",
       headerName: "Nama Kategori",
-      width: 900,
+      width: 1000,
     },
     {
       width: 200,
       field: "action",
       headerName: "Action",
+      headerAlign: "center",
+      align: "center",
       sortable: false,
       renderCell: (params) => {
-        const onClick = () => {
+        const onClickDelete = async () => {
           const id = params.id;
           try {
-            const response = fetch(`http://localhost:4000/kategori/${id}`, {
+            const response = await fetch(`http://localhost:4000/kategori/${id}`, {
               method: "DELETE",
               headers: {
                 "Content-Type": "application/json",
@@ -63,7 +103,7 @@ export default function Kategori() {
               },
             });
 
-            if (response.status === 201 || 204) {
+            if (response.status === 201 || response.status === 204) {
               alert("Data berhasil dihapus");
               fetchData();
             } else if (response.status === 400) {
@@ -76,10 +116,17 @@ export default function Kategori() {
           }
         };
 
+        const onClickEdit = () => {
+          handleOpenModal(params.row);
+        };
+
         return (
           <div>
             {(role === "p" || role === "a") && (
-              <Button onClick={onClick}>HAPUS</Button>
+              <div>
+                <Button onClick={onClickEdit}>EDIT</Button>
+                <Button onClick={onClickDelete}>HAPUS</Button>
+              </div>
             )}
           </div>
         );
@@ -187,6 +234,31 @@ export default function Kategori() {
             pageSizeOptions={[100]}
           />
         </Box>
+        <Modal open={isModalOpen} onClose={handleCloseModal}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <TextField
+            label="Kategori"
+            fullWidth
+            value={editedKategori.nama_kategori}
+            onChange={(e) =>
+              setEditedKategori({ ...editedKategori, nama_kategori: e.target.value })
+            }
+            sx={{ mb: 2 }}
+          />
+          <Button onClick={handleUpdate}>Update</Button>
+        </Box>
+      </Modal>
       </center>
     </div>
   );

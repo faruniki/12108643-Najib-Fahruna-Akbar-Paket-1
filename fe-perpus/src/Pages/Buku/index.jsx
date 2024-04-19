@@ -134,7 +134,7 @@ export default function Buku() {
     {
       field: "penulis",
       headerName: "Penulis",
-      width: 300,
+      width: 400,
     },
     {
       field: "penerbit",
@@ -167,7 +167,7 @@ export default function Buku() {
     {
       field: "kategoriId",
       headerName: "Kategori",
-      width: 150,
+      width: 250,
       renderCell: (params) => {
         if (params.row.kategoriId) {
           return params.row.kategoriId.nama_kategori;

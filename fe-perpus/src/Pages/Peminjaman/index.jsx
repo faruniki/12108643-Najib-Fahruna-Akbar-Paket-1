@@ -35,6 +35,35 @@ export default function Peminjaman() {
     }
   }
 
+  const [dataPeminjamanAdmin, setDataPeminjamanAdmin] = useState();
+
+  async function fetchDataAdmin() {
+    const apiUrl = `http://localhost:4000/peminjaman/admin`;
+
+    try {
+      setDataPeminjamanAdmin([]);
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        setDataPeminjamanAdmin(data);
+      } else if (response.status === 404) {
+        setDataPeminjamanAdmin([]);
+      }
+    } catch (error) {
+      setDataPeminjamanAdmin(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchDataAdmin();
+  }, []);
+
   const [dataBuku, setDataBuku] = useState([]);
 
   const [editedPeminjaman, setEditedPeminjaman] = useState({});
@@ -114,7 +143,6 @@ export default function Peminjaman() {
 
       if (response.status === 200) {
         const data = await response.json();
-        
       } else if (response.status === 404) {
       }
     } catch (error) {}
@@ -126,19 +154,42 @@ export default function Peminjaman() {
 
   const exportToExcel = () => {
     const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(dataPeminjaman.map(item => ({
-      userId: item.userId.username,
-      bukuId: item.bukuId.judul,
-      status: item.status,
-      tanggal_peminjaman: item.tanggal_peminjaman,
-      tanggal_pengembalian: item.tanggal_pengembalian
-    })));
-    
+    const ws = XLSX.utils.json_to_sheet(
+      dataPeminjaman.map((item) => ({
+        peminjam: item.userId.username,
+        buku: item.bukuId.judul,
+        status: item.status,
+        tanggal_peminjaman: item.tanggal_peminjaman,
+        tanggal_pengembalian: item.tanggal_pengembalian,
+      }))
+    );
+  
+    const header = ["HISTORY PEMINJAMAN BUKU"];
+    XLSX.utils.sheet_add_aoa(ws, [header], { origin: "A8" });
+  
     XLSX.utils.book_append_sheet(wb, ws, "Data Peminjaman");
     XLSX.writeFile(wb, "data_peminjaman.xlsx");
   };
   
+
+  const exportToExcelAdmin = () => {
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(
+      dataPeminjamanAdmin.map((item) => ({
+        peminjam: item.userId.username,
+        buku: item.bukuId.judul,
+        status: item.status,
+        tanggal_peminjaman: item.tanggal_peminjaman,
+        tanggal_pengembalian: item.tanggal_pengembalian,
+      }))
+    );
+
+    const header = ["HISTORY PEMINJAMAN BUKU"];
+    XLSX.utils.sheet_add_aoa(ws, [header], { origin: "H1" });
   
+    XLSX.utils.book_append_sheet(wb, ws, "Data Peminjaman");
+    XLSX.writeFile(wb, "data_peminjaman.xlsx");
+  };
 
   const columns = [
     {
@@ -209,6 +260,7 @@ export default function Peminjaman() {
             if (response.status === 201 || 204) {
               alert("Data berhasil dihapus");
               fetchData();
+              fetchDataAdmin();
             } else if (response.status === 400) {
               alert("Gagal mengubah data");
             } else {
@@ -223,18 +275,52 @@ export default function Peminjaman() {
           handleOpenModal(params.row);
         };
 
-        return (
-          <div>
-            <Button onClick={onClickEdit}>EDIT</Button>
-            <Button onClick={onClickDelete}>HAPUS</Button>
-          </div>
-        );
+        if (params.row.userId?._id === idUser) {
+          return (
+            <div>
+              <Button onClick={() => onClickEdit()}>EDIT</Button>
+              <Button onClick={() => onClickDelete()}>HAPUS</Button>
+            </div>
+          );
+        } else {
+          return null;
+        }
       },
     },
   ];
 
   useEffect(() => {
     fetchData();
+  }, []);
+
+  const [role, setRole] = useState("");
+  const [idUser, setIdUser] = useState("");
+
+  async function profile() {
+    const apiUrl = `http://localhost:4000/auth/profile`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        setRole(data.role);
+        setIdUser(data._id);
+      } else if (response.status === 404) {
+        setRole("");
+      }
+    } catch (error) {
+      setRole("");
+    }
+  }
+
+  useEffect(() => {
+    profile();
   }, []);
 
   return (
@@ -250,24 +336,26 @@ export default function Peminjaman() {
       >
         <h2 style={{ marginTop: 40, marginLeft: "5%" }}>Peminjaman</h2>
         <div>
-          <button
-            style={{
-              marginRight: 10,
-              marginTop: 40,
-              width: 80,
-              height: 30,
-              color: "#fff",
-              fontWeight: 600,
-              borderRadius: "5px",
-              letterSpacing: 1,
-              border: "1px solid #1944a1",
-              backgroundColor: "#1944a1",
-            }}
-            onClick={exportToExcel}
-          >
-            EXPORT
-          </button>
-          <a href="/peminjaman/create">
+          {role === "u" && (
+            <button
+              style={{
+                marginRight: 10,
+                marginTop: 40,
+                width: 80,
+                height: 30,
+                color: "#fff",
+                fontWeight: 600,
+                borderRadius: "5px",
+                letterSpacing: 1,
+                border: "1px solid #1944a1",
+                backgroundColor: "#1944a1",
+              }}
+              onClick={exportToExcel}
+            >
+              EXPORT
+            </button>
+          )}
+          {(role === "a" || role === "p") && (
             <button
               style={{
                 marginRight: 80,
@@ -281,29 +369,69 @@ export default function Peminjaman() {
                 border: "1px solid #1944a1",
                 backgroundColor: "#1944a1",
               }}
+              onClick={exportToExcelAdmin}
             >
-              CREATE
+              EXPORT
             </button>
-          </a>
+          )}
+          {(role === "u") && (
+            <a href="/peminjaman/create">
+              <button
+                style={{
+                  marginRight: 80,
+                  marginTop: 40,
+                  width: 80,
+                  height: 30,
+                  color: "#fff",
+                  fontWeight: 600,
+                  borderRadius: "5px",
+                  letterSpacing: 1,
+                  border: "1px solid #1944a1",
+                  backgroundColor: "#1944a1",
+                }}
+              >
+                CREATE
+              </button>
+            </a>
+          )}
         </div>
       </div>
-      
+
       <center>
-        <Box style={{ width: "90%", marginTop: 40 }}>
-          <DataGrid
-            getRowId={(dataPeminjaman) => dataPeminjaman._id}
-            rows={dataPeminjaman}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 100,
+        {role === "u" && (
+          <Box style={{ width: "90%", marginTop: 40 }}>
+            <DataGrid
+              getRowId={(dataPeminjaman) => dataPeminjaman._id}
+              rows={dataPeminjaman}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 100,
+                  },
                 },
-              },
-            }}
-            pageSizeOptions={[100]}
-          />
-        </Box>
+              }}
+              pageSizeOptions={[100]}
+            />
+          </Box>
+        )}
+        {(role === "a" || role === "p") && (
+          <Box style={{ width: "90%", marginTop: 40 }}>
+            <DataGrid
+              getRowId={(dataPeminjamanAdmin) => dataPeminjamanAdmin._id}
+              rows={dataPeminjamanAdmin}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 100,
+                  },
+                },
+              }}
+              pageSizeOptions={[100]}
+            />
+          </Box>
+        )}
         <Modal open={isModalOpen} onClose={handleCloseModal}>
           <Box
             sx={{
@@ -317,32 +445,6 @@ export default function Peminjaman() {
               p: 4,
             }}
           >
-            <select
-              value={editedPeminjaman.bukuId}
-              onChange={(e) =>
-                setEditedPeminjaman({
-                  ...editedPeminjaman,
-                  bukuId: e.target.value,
-                })
-              }
-              style={{
-                width: "400px",
-                height: "40px",
-                borderRadius: "5px",
-                border: "1px solid grey",
-                backgroundColor: "#f4f4f4",
-                padding: "2px 10px",
-                fontSize: "14px",
-                marginBottom: "10px",
-              }}
-            >
-              <option value="">Pilih Buku</option>
-              {dataBuku.map((buku) => (
-                <option key={buku._id} value={buku._id}>
-                  {buku.judul}
-                </option>
-              ))}
-            </select>
             <select
               value={editedPeminjaman.status}
               onChange={(e) =>
@@ -363,35 +465,31 @@ export default function Peminjaman() {
                 marginTop: "10px",
               }}
             >
-              <option value="dipinjam">Di Pinjam</option>
               <option value="dikembalikan">Di Kembalikan</option>
             </select>
             <br />
-            {editedPeminjaman.status === "dikembalikan" && (
-              <input
-                type="date"
-                placeholder="Tanggal Pengembalian"
-                value={editedPeminjaman.tanggal_pengembalian}
-                onChange={(e) =>
-                  setEditedPeminjaman({
-                    ...editedPeminjaman,
-                    tanggal_pengembalian: e.target.value,
-                  })
-                }
-                style={{
-                  width: "378px",
-                  height: "40px",
-                  borderRadius: "5px",
-                  border: "1px solid grey",
-                  backgroundColor: "#f4f4f4",
-                  padding: "2px 10px",
-                  fontSize: "14px",
-                  marginBottom: "10px",
-                  marginTop: "10px",
-                }}
-              ></input>
-            )}
-
+            <input
+              type="datetime-local"
+              placeholder="Tanggal Pengembalian"
+              value={editedPeminjaman.tanggal_pengembalian}
+              onChange={(e) =>
+                setEditedPeminjaman({
+                  ...editedPeminjaman,
+                  tanggal_pengembalian: e.target.value,
+                })
+              }
+              style={{
+                width: "378px",
+                height: "40px",
+                borderRadius: "5px",
+                border: "1px solid grey",
+                backgroundColor: "#f4f4f4",
+                padding: "2px 10px",
+                fontSize: "14px",
+                marginBottom: "10px",
+                marginTop: "10px",
+              }}
+            ></input>
             <Button onClick={handleUpdate}>Update</Button>
           </Box>
         </Modal>

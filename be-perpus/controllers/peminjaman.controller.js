@@ -13,6 +13,19 @@ peminjamanController.create = async (req, res) => {
 
 peminjamanController.findAll = async (req, res) => {
     try {
+
+        const userId = req.user._id?.toHexString();
+        const query = {userId: userId};
+        const peminjaman = await Peminjaman.find(query).populate('userId').populate('bukuId');
+        res.status(200).send(peminjaman);
+    } catch (error) {
+        res.status(400).send(error);
+    }
+}
+
+peminjamanController.adminFindAll = async (req, res) => {
+    try {
+
         const peminjaman = await Peminjaman.find().populate('userId').populate('bukuId');
         res.status(200).send(peminjaman);
     } catch (error) {
