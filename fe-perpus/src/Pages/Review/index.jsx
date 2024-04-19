@@ -152,7 +152,7 @@ export default function Review() {
   };
 
   const exportToExcel = () => {
-    const wb = XLSX.utils.book();
+    const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(
       dataReview.map((item) => ({
         userId: item.userId.username,
@@ -161,9 +161,12 @@ export default function Review() {
         rating: item.rating,
       }))
     );
-
+  
+    const header = ["HISTORY REVIEW"];
+    XLSX.utils.sheet_add_aoa(ws, [header], { origin: "H1" });
+  
     XLSX.utils.book_append_sheet(wb, ws, "Data Review");
-    XLSX.writeFile(wb, "data_ulasan.xlsx");
+    XLSX.writeFile(wb, "data_review.xlsx");
   };
 
   const columns = [

@@ -165,7 +165,7 @@ export default function Peminjaman() {
     );
   
     const header = ["HISTORY PEMINJAMAN BUKU"];
-    XLSX.utils.sheet_add_aoa(ws, [header], { origin: "A8" });
+    XLSX.utils.sheet_add_aoa(ws, [header], { origin: "H1" });
   
     XLSX.utils.book_append_sheet(wb, ws, "Data Peminjaman");
     XLSX.writeFile(wb, "data_peminjaman.xlsx");
