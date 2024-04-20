@@ -161,10 +161,10 @@ export default function Review() {
         rating: item.rating,
       }))
     );
-  
+
     const header = ["HISTORY REVIEW"];
     XLSX.utils.sheet_add_aoa(ws, [header], { origin: "H1" });
-  
+
     XLSX.utils.book_append_sheet(wb, ws, "Data Review");
     XLSX.writeFile(wb, "data_review.xlsx");
   };
@@ -241,23 +241,25 @@ export default function Review() {
       >
         <h2 style={{ marginTop: 40, marginLeft: "5%" }}>Review</h2>
         <div>
-          <button
-            style={{
-              marginRight: 10,
-              marginTop: 40,
-              width: 80,
-              height: 30,
-              color: "#fff",
-              fontWeight: 600,
-              borderRadius: "5px",
-              letterSpacing: 1,
-              border: "1px solid #1944a1",
-              backgroundColor: "#1944a1",
-            }}
-            onClick={exportToExcel}
-          >
-            EXPORT
-          </button>
+          {(role === "a" || role === "p") && (
+            <button
+              style={{
+                marginRight: 80,
+                marginTop: 40,
+                width: 80,
+                height: 30,
+                color: "#fff",
+                fontWeight: 600,
+                borderRadius: "5px",
+                letterSpacing: 1,
+                border: "1px solid #1944a1",
+                backgroundColor: "#1944a1",
+              }}
+              onClick={exportToExcel}
+            >
+              EXPORT
+            </button>
+          )}
           {role === "u" && (
             <a href="/review/create">
               <button

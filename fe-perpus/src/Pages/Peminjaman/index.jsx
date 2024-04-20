@@ -278,7 +278,7 @@ export default function Peminjaman() {
         if (params.row.userId?._id === idUser) {
           return (
             <div>
-              <Button onClick={() => onClickEdit()}>EDIT</Button>
+              <Button onClick={() => onClickEdit()}>KEMBALIKAN</Button>
               <Button onClick={() => onClickDelete()}>HAPUS</Button>
             </div>
           );
@@ -490,7 +490,7 @@ export default function Peminjaman() {
                 marginTop: "10px",
               }}
             ></input>
-            <Button onClick={handleUpdate}>Update</Button>
+            <Button onClick={handleUpdate}>Simpan</Button>
           </Box>
         </Modal>
       </center>

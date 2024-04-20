@@ -93,6 +93,24 @@ export default function Users() {
       field: "role",
       headerName: "Role",
       width: 250,
+      renderCell: (params) => {
+        let roleLabel = "";
+        switch (params.value) {
+          case "u":
+            roleLabel = "user";
+            break;
+          case "a":
+            roleLabel = "admin";
+            break;
+          case "p":
+            roleLabel = "petugas";
+            break;
+          default:
+            roleLabel = "unknown";
+            break;
+        }
+        return <div>{roleLabel}</div>;
+      },
     },
     {
       field: "address",

@@ -82,7 +82,7 @@ export default function Kategori() {
     {
       field: "nama_kategori",
       headerName: "Nama Kategori",
-      width: 1000,
+      width: 1500,
     },
     {
       width: 200,
